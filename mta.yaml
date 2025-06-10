@@ -1,0 +1,63 @@
+_schema-version: '3.3'
+ID: my-cap-react-app
+version: 1.0.0
+
+modules:
+  - name: backend
+    type: nodejs
+    path: backend
+    requires:
+      - name: hdi_db
+    provides:
+      - name: backend_api
+        properties:
+          url: ${default-url}
+
+  - name: frontend
+    type: html5
+    path: frontend
+    build-parameters:
+      builder: custom
+      commands:
+        - npm install
+        - npm run build
+      supported-platforms: []
+
+  - name: frontend-deployer
+    type: com.sap.html5.application-content
+    path: frontend
+    requires:
+      - name: html5_repo_host
+    build-parameters:
+      requires:
+        - name: frontend
+          artifacts:
+            - build/**
+
+  - name: approuter
+    type: nodejs
+    path: approuter
+    requires:
+      - name: html5_repo_runtime
+        group: destinations
+      - name: backend
+        group: destinations
+
+resources:
+  - name: html5_repo_host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+
+  - name: html5_repo_runtime
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+
+  - name: hdi_db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared

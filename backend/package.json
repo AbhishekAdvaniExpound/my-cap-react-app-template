@@ -1,0 +1,9 @@
+{
+  "name": "backend",
+  "dependencies": {
+    "@sap/cds": "^7"
+  },
+  "scripts": {
+    "start": "cds run"
+  }
+}
